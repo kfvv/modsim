@@ -1,72 +1,64 @@
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from matplotlib import animation
+import numpy as np
 import random
 
+EMPTY = 0
+PREDATOR = 1
+PREY = 2
 
-# Make a colormap of fixed colors using http://stackoverflow.com/questions/
-# 9707676/defining-a-discrete-colormap-for-imshow-in-matplotlib
-cmap = colors.ListedColorMap(['white', 'red', 'green'])
-bounds = [EMPTY, PREDATOR, PRAY, 3]
+# Make a colormap of fixed colors using:
+# http://stackoverflow.com/questions/9707676/defining-a-discrete-colormap-for-imshow-in-matplotlib
+cmap = colors.ListedColormap(['white', 'red', 'blue'])
+bounds = [EMPTY, PREDATOR, PREY, 3]
 norm = colors.BoundaryNorm(bounds, cmap.N)
 
-class predPray:
-    specie = 2
-    PREY, PREDATOR = range(specie)
 
-    def health(self, energy):
-        self.health = health;
+class Animal:
+    def __init__(self, health):
+        self.health = health
 
 
-    def healthDecr(self, val):
-        self.health -= val;
-
-    def healthIncr(self, val):
-        self.health += val;
-
-    def getHealth(self):
-        return self.energy
-
-    def getChar(self):
-        return self.char
-
-class prey(object):
-    def health(self):
+class Prey(Animal):
+    color = PREY
 
 
-class predator(object):
-
-    def health(self):
-
-class cell(object):
-    def __init__(self):
-        self.content = None
-
-    def place(self, animal):
-        self.content = animal
-        animal.cell = self
-
-class grid(object):
-    def __init_(self, X, N_prey, N_predator):
-        self.cells = [[cell() for j in range(X)] for i in range(X)]
+class Predator(Animal):
+    color = PREDATOR
 
 
-    for i in range(X):
-        for j in range(X):
-            self.cells[i][j].neighbours = (self.cells[i](j + 1) % X],
-                                            (self.cells[i](j - 1) % X],
-                                             (self.cells[i](j + 1) % X],
-                                            (self.cells[(i - 1) % X][j]
-
-    self.allpray = [prey() for i in range(N_prey)]
-    self.allpredator = [predator() for i in range(N_predator)]
+class Cell(object):
+    color = EMPTY
 
 
-    empty = [gridcell for row in self.cells for gridcell in row]
+def plot(grid):
+    plt.imshow(grid, interpolation='nearest', cmap=cmap, norm=norm)
+    plt.show()
 
-    for animal in self.allprey + self.allpredator:
-        randomcell = empty.pop(random.randrange(len(empty)))
 
-        randomcell.place(animal)
+if __name__ == '__main__':
+    # Make the simulation deterministic
+    random.seed(42)
 
-if __name__ = '__main__':
+    N = 24
+
+    prey_count = 10
+    predator_count = 3
+
+    grid = np.zeros((N, N))
+
+    # Select the cells where preys or predators are stored initially
+    amount = prey_count + predator_count
+    cells = random.sample([(i, j) for i in range(N) for j in range(N)], amount)
+
+    print('prey:', cells[:prey_count])
+    print('predator:', cells[prey_count:])
+
+    for x, y in cells[:prey_count]:
+        grid[x, y] = PREY
+
+    for x, y in cells[prey_count:]:
+        grid[x, y] = PREDATOR
+
+    plot(grid)
