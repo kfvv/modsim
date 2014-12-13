@@ -16,8 +16,9 @@ norm = colors.BoundaryNorm(bounds, cmap.N)
 
 
 class Animal:
-    def __init__(self, health):
-        self.health = health
+    def __init__(self, pos):
+        self.pos = pos
+        self.health = 100
 
 
 class Prey(Animal):
@@ -32,9 +33,30 @@ class Cell(object):
     color = EMPTY
 
 
-def plot(grid):
-    plt.imshow(grid, interpolation='nearest', cmap=cmap, norm=norm)
-    plt.show()
+def plot(grid, preys, predators):
+    grid[:, :] = EMPTY
+
+    for prey in preys:
+        grid[prey.pos] = PREY
+
+    for predator in predators:
+        grid[predator.pos] = PREDATOR
+
+
+def random_walk_animal(animal):
+    move = random.randint(0, 3)
+    x, y = animal.pos
+
+    if move == 0:
+        x, y = (x, y - 1)
+    elif move == 1:
+        x, y = (x - 1, y)
+    elif move == 2:
+        x, y = (x, y + 1)
+    elif move == 3:
+        x, y = (x + 1, y)
+
+    animal.pos = x, y
 
 
 if __name__ == '__main__':
@@ -42,6 +64,7 @@ if __name__ == '__main__':
     random.seed(42)
 
     N = 24
+    T = 10
 
     prey_count = 10
     predator_count = 3
@@ -49,16 +72,17 @@ if __name__ == '__main__':
     grid = np.zeros((N, N))
 
     # Select the cells where preys or predators are stored initially
-    amount = prey_count + predator_count
-    cells = random.sample([(i, j) for i in range(N) for j in range(N)], amount)
+    cells = random.sample([(i, j) for i in range(N) for j in range(N)],
+                          prey_count + predator_count)
 
-    print('prey:', cells[:prey_count])
-    print('predator:', cells[prey_count:])
+    preys = map(Prey, cells[:prey_count])
+    predators = map(Predator, cells[prey_count:])
 
-    for x, y in cells[:prey_count]:
-        grid[x, y] = PREY
+    # Start the model evaluation
+    for t in range(T):
+        plot(grid, preys, predators)
+        plt.imshow(grid, interpolation='nearest', cmap=cmap, norm=norm)
+        plt.pause(0.1)
 
-    for x, y in cells[prey_count:]:
-        grid[x, y] = PREDATOR
-
-    plot(grid)
+        # Update the predator-prey model
+        random_walk_animal(preys[0])
