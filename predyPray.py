@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from matplotlib import colors
-from matplotlib import animation
 import numpy as np
 import random
 
@@ -43,18 +42,24 @@ def plot(grid, preys, predators):
         grid[predator.pos] = PREDATOR
 
 
-def random_walk_animal(animal):
-    move = random.randint(0, 3)
-    x, y = animal.pos
+def random_walk_animal(grid, animal):
+    height, width = grid.shape
 
-    if move == 0:
-        x, y = (x, y - 1)
-    elif move == 1:
-        x, y = (x - 1, y)
-    elif move == 2:
-        x, y = (x, y + 1)
-    elif move == 3:
-        x, y = (x + 1, y)
+    while True:
+        move = random.randint(0, 3)
+        x, y = animal.pos
+
+        if move == 0:
+            x, y = (x, y - 1)
+        elif move == 1:
+            x, y = (x - 1, y)
+        elif move == 2:
+            x, y = (x, y + 1)
+        elif move == 3:
+            x, y = (x + 1, y)
+
+        if 0 <= x < width and 0 <= y < height:
+            break
 
     animal.pos = x, y
 
@@ -64,7 +69,7 @@ if __name__ == '__main__':
     random.seed(42)
 
     N = 24
-    T = 10
+    T = 30
 
     prey_count = 10
     predator_count = 3
@@ -85,4 +90,5 @@ if __name__ == '__main__':
         plt.pause(0.1)
 
         # Update the predator-prey model
-        random_walk_animal(preys[0])
+        for animal in preys + predators:
+            random_walk_animal(grid, animal)
