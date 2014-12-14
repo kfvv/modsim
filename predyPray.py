@@ -7,6 +7,7 @@ EMPTY = 0
 PREDATOR = 1
 PREY = 2
 
+# Species procreate when their energy exceeds this threshold
 HEALTH_SPLIT_THRESHOLD = 60
 
 # Make a colormap of fixed colors using:
@@ -69,6 +70,17 @@ def random_walk_animal(grid, cur_x, cur_y, animal, pos):
     if isinstance(animal, Predator):
         # Decrease the health of a predator after each time step.
         animal.health -= 1
+
+        if animal.health > HEALTH_SPLIT_THRESHOLD:
+            # Find position for the new predator.
+            for i, j in [(cur_x, cur_y + 1), (cur_x + 1, cur_y),
+                         (cur_x, cur_y - 1), (cur_x - 1, cur_y)]:
+                if 0 <= i < width and 0 <= j < height and (i, j) not in pos:
+                    animal.health /= 2
+
+                    new_animal = Predator()
+                    new_animal.health = animal.health
+                    pos[i, j] = new_animal
 
         # Predator dies if it has no energy left.
         if animal.health <= 0:
